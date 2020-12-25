@@ -4,7 +4,7 @@ import pandas as pd
 
 df = pd.DataFrame()
 # Инициализация БД
-db_session.global_init('../files/database/sample_2.db')
+db_session.global_init('../files/database/sample.xlsx.db')
 session = db_session.create_session()
 
 df['№'] = [i[0] for i in session.query(AdModelLeroyMerlin.ENTRY_ID).all()]
