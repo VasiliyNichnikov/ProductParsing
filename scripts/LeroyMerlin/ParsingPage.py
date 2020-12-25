@@ -5,14 +5,15 @@ from scripts.GettingDriver import get_information
 
 
 class ParsingPage:
-    def __init__(self, url, start_page):
+    def __init__(self, url, start_page, delay_after_error=0):
         self.url = url
+        self.delay_after_error = delay_after_error
         self.page = start_page
         self.max_page = self.page + 1
 
     # Получение ссылок
     def get_urls(self):
-        soup = get_information(url=self.url + f'&page={self.page}')
+        soup = get_information(url=self.url + f'&page={self.page}', delay_after_error=self.delay_after_error)
         self.max_page = self.__get_max_page(soup=soup)
         block_urls = soup.find('div', {'class': ['cards-view-block', 'list']})
         if block_urls is not None:

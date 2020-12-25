@@ -6,10 +6,9 @@ from scripts.GettingDriver import get_information
 
 
 class ParsingAd:
-    def __init__(self, url):
+    def __init__(self, url, delay_after_error=0):
         self.url = url
-        self.soup = get_information(url)
-        # print(f'Прямая ссылка на товар - {self.url}')
+        self.soup = get_information(url, delay_after_error=delay_after_error)
 
     # Возвращает название товара
     def __get_name(self):
