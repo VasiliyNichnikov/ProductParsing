@@ -1,7 +1,7 @@
 """
     Данный скрипт парсит объявление Leroy Merlin и получает ссылки.
 """
-from scripts.GettingDriver import get_information
+from GettingDriver import get_information_requests
 
 
 class ParsingPage:
@@ -13,14 +13,13 @@ class ParsingPage:
 
     # Получение ссылок
     def get_urls(self):
-        soup = get_information(url=self.url + f'&page={self.page}', delay_after_error=self.delay_after_error)
+        soup = get_information_requests(url=self.url + f'&page={self.page}', delay_after_error=self.delay_after_error)
         self.max_page = self.__get_max_page(soup=soup)
-        block_urls = soup.find('div', {'class': ['cards-view-block', 'list']})
+        block_urls = soup.find('div', {'class': ['cards-view-block', 'list', 'pedu908_plp']})
         if block_urls is not None:
-            _block_urls = block_urls.find('div', {'data-element-id': 'plp-card-list', 'class': 'plp-card-list'})
-            if _block_urls is not None:
-                list_items = _block_urls.find_all('product-card')
-                return [f"https://leroymerlin.ru{item.find('uc-plp-item-new').get('href')}" for item in list_items]
+            list_items = block_urls.find_all('div', {
+                'class': ['c155f0re_plp', 'c1pkpd8l_plp', 'list']})
+            return [f"https://perm.leroymerlin.ru{item.find('a').get('href')}" for item in list_items]
 
     # Удаление пробелов и enter
     def __removing_spaces_enter(self, value):
@@ -29,13 +28,13 @@ class ParsingPage:
     # Получение максимальной странице
     def __get_max_page(self, soup):
         list_max_page = [self.page]
-        block_max_page = soup.find('div', {'class': 'items-wrapper'})
+        block_max_page = soup.find('div', {'class': 's1pmiv2e_plp'})
         if block_max_page is not None:
-            list_items = block_max_page.find_all('div', {'class': 'item-wrapper'})
+            list_items = block_max_page.find_all('a', {
+                'class': ['bex6mjh_plp', 'o1ojzgcq_plp', 'l7pdtbg_plp', 'r1yi03lb_plp', 'sj1tk7s_plp', 'irhr125_plp']})
             for item in list_items:
-                _a = item.find('a')
-                if _a is not None:
-                    list_max_page.append(int(self.__removing_spaces_enter(_a.text)))
+                _a = item.get('data-qa-pagination-item')
+                if _a is not None and _a != 'right' and _a != 'left':
+                    _a.replace(' ', '')
+                    list_max_page.append(int(_a))
         return max(list_max_page)
-
-

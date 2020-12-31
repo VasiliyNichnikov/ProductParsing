@@ -14,6 +14,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
+        MainWindow.setWindowTitle("Парсинг")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.centralwidget)
@@ -146,7 +147,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        # MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_list_links.setText(_translate("MainWindow", "Список ссылок"))
         __sortingEnabled = self.listWidget_list_links.isSortingEnabled()
         self.listWidget_list_links.setSortingEnabled(False)
