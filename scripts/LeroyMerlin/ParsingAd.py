@@ -193,8 +193,3 @@ class ParsingAd:
         # self.__get_all_photos_product()
         # self.__get_quantity_goods()
 
-# if __name__ == '__main__':
-#     init_driver()
-#     parsing_ad = ParsingAd('https://leroymerlin.ru/product/shkaf-raspashnoy-turin-120h212h60-sm-82285499/')
-#     parsing_ad.get_info()
-# close_driver()
