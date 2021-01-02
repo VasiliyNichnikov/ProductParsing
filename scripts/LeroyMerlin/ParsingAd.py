@@ -1,14 +1,16 @@
 """
     Данный скрипт парсит объявление Leroy Merlin и получает цену, описание товара и сохранение фото.
 """
-
-from scripts.GettingDriver import get_information
+import os
+import httplib2
+from GettingDriver import get_information_requests
 
 
 class ParsingAd:
-    def __init__(self, url, delay_after_error=0):
+    def __init__(self, url, path_images, delay_after_error=0):
         self.url = url
-        self.soup = get_information(url, delay_after_error=delay_after_error)
+        self.path_images = path_images
+        self.soup = get_information_requests(url, delay_after_error=delay_after_error)
 
     # Возвращает название товара
     def __get_name(self):
@@ -56,43 +58,57 @@ class ParsingAd:
     def __get_specifications(self):
         block_specifications = self.soup.find('dl', {'class': 'def-list'})
         dict_result = {'вес': '0', 'ширина': '0', 'высота': '0',
-                       'модель': '0', 'тип': '0', 'марка': '0', 'изготовитель': '0', 'объем': '0'}
+                       'модель': '0', 'тип': '0', 'марка': '0', 'изготовитель': '0', 'объем': '0', 'другое': []}
         if block_specifications is not None:
             list_items = block_specifications.find_all('div', {'class': 'def-list__group'})
 
             if list_items is not None:
+                list_other = []
                 for item in list_items:
-                    key = item.find('dt', {'class': 'def-list__term'}).text.replace('\n', '').replace(' ', '').lower()
-                    value = item.find('dd', {'class': 'def-list__definition'}).text.replace('\n', '')\
+                    key_save = item.find('dt', {'class': 'def-list__term'}).text.replace('\n', '')
+                    key = key_save.replace(' ', '').lower()
+                    value = item.find('dd', {'class': 'def-list__definition'}).text.replace('\n', '') \
                         .replace('                ', '').lower()
 
                     if 'вес,кг' in key:
                         dict_result['вес'] = self.__conversion_to_grams(value.replace(' ', ''))
-                        # print(f'Вес - {value}')
                     elif 'ширинатоваравиндивидуальнойупаковке' in key:
                         dict_result['ширина'] = self.__conversion_millimeters(value.replace(' ', ''))
-                        # print(f'Ширина - {value}')
                     elif 'высотатоваравиндивидуальнойупаковке' in key:
                         dict_result['высота'] = self.__conversion_millimeters(value.replace(' ', ''))
-                        # print(f'Высота - {value}')
                     elif 'модельпродукта' in key:
                         dict_result['модель'] = value
-                        # print(f'Модель - {value}')
                     elif 'типпродукта' in key:
                         dict_result['тип'] = value
-                        # print(f'Тип - {value}')
                     elif 'марка' in key:
                         dict_result['марка'] = value
-                        # print(f'Марка - {value}')
                     elif 'странапроизводства' in key:
                         dict_result['изготовитель'] = value
-                        # print(f'Страна изготовитель - {value}')
                     elif 'объем(л)' in key:
                         dict_result['объем'] = value.replace(' ', '')
-                        # print(f'Объем,л - {value}')
-                    # else:
-                    #     print(f'Не определен; Key - {key}; Value - {value}')
+                    else:
+                        list_other.append(f'{key_save}:{value}')
+                dict_result['другое'] = self.__translate_list_to_string(list_other)
         return dict_result
+
+    # Установка изображений
+    def __save_images(self, list_images):
+        ready_path = self.path_images + f'/{self.__get_name()}'
+        try:
+            # Создание папки
+            os.mkdir(ready_path)
+            # Добавление изображений в папку
+            h = httplib2.Http('.cache')
+            number = 0
+            for image in list_images:
+                number += 1
+                response, content = h.request(image)
+                out = open(ready_path + f'/{number}.jpg', 'wb')
+                out.write(content)
+                out.close()
+
+        except OSError:
+            print('Создать директорию %s не удалось' % ready_path)
 
     # Получение описания
     def __get_description(self):
@@ -122,21 +138,12 @@ class ParsingAd:
         if len(list_result) != 0 and list_result is not None:
             dict_result['main-photo'] = list_result[0]
             if len(list_result) > 1:
-                dict_result['additional-photos'] = self.__translate_list_to_string(list_result[1:])  # Может произойти ошибка, если будет только одно фото
+                dict_result['additional-photos'] = self.__translate_list_to_string(list_result[1:])
             dict_result['photo-articles'] = self.__translate_list_to_string(self.__get_article_photo(list_result))
+            self.__save_images(list_result)
         else:
             print('Фото не найдены')
         return dict_result
-
-    # Получение ссылки на главное фото
-    # def __get_url_main_photo(self):
-    #     block_url_main_photo = self.soup.find('picture', {'slot': 'pictures', 'id': 'picture-box-id-generated-6',
-    #                                                       'aria-labeledby': 'thumb-box-id-generated-6'})
-    #     if block_url_main_photo is not None:
-    #         url_main_photo = block_url_main_photo.find('source', {'media': ' only screen and (min-width: 1024px)',
-    #                                                               'itemprop': 'image'})
-    #         if url_main_photo is not None:
-    #             print(f'Главное фото - {url_main_photo.get("srcset")}')
 
     # Перевод списка в строку
     def __translate_list_to_string(self, _list):
@@ -159,6 +166,7 @@ class ParsingAd:
         brand = specifications['марка']
         manufacturer = specifications['изготовитель']
         volume = specifications['объем']
+        other = specifications['другое']
 
         all_photos = self.__get_all_photos_product()
         main_photo = all_photos['main-photo']
@@ -184,12 +192,6 @@ class ParsingAd:
             'PHOTO_ARTICLES': photo_articles,
             'DESCRIPTION': description,
             'QUANTITY_GOODS': quantity_goods,
+            'OTHER': other,
             'URL': self.url
         }
-
-        # self.__get_name()
-        # self.__get_specifications()
-        # self.__get_description()
-        # self.__get_all_photos_product()
-        # self.__get_quantity_goods()
-

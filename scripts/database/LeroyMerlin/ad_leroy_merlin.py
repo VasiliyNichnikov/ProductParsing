@@ -21,4 +21,5 @@ class AdModelLeroyMerlin(SqlAlchemyBase):
     PHOTO_ARTICLES = Column(String, nullable=True)
     DESCRIPTION = Column(String, nullable=True)
     QUANTITY_GOODS = Column(String, nullable=True)
+    OTHER = Column(String, nullable=True)
     URL = Column(String, nullable=True)
