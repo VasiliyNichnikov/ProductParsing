@@ -1,7 +1,7 @@
 """
     Данный скрипт парсит объявление Leroy Merlin и получает ссылки.
 """
-from GettingDriver import get_information_requests
+from scripts.getting_driver import get_information_requests
 
 
 class ParsingPage:
@@ -15,10 +15,13 @@ class ParsingPage:
     def get_urls(self):
         soup = get_information_requests(url=self.url + f'&page={self.page}', delay_after_error=self.delay_after_error)
         self.max_page = self.__get_max_page(soup=soup)
-        block_urls = soup.find('div', {'class': ['cards-view-block', 'list', 'pedu908_plp']})
+        block_urls = soup.find('div', {'class': ['cards-view-block', 'list', 'pedu908_plp', 'filtered-products-wrapper']})
         if block_urls is not None:
             list_items = block_urls.find_all('div', {
                 'class': ['c155f0re_plp', 'c1pkpd8l_plp', 'list']})
+            if len(list_items) == 0:
+                list_items = block_urls.find_all('uc-plp-item-new')
+                return [f"https://perm.leroymerlin.ru{item.get('href')}" for item in list_items]
             return [f"https://perm.leroymerlin.ru{item.find('a').get('href')}" for item in list_items]
 
     # Удаление пробелов и enter

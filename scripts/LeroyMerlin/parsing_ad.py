@@ -3,7 +3,8 @@
 """
 import os
 import httplib2
-from GettingDriver import get_information_requests
+from PIL import Image
+from scripts.getting_driver import get_information_requests
 
 
 class ParsingAd:
@@ -93,6 +94,7 @@ class ParsingAd:
 
     # Установка изображений
     def __save_images(self, list_images):
+        list_images_path = []
         ready_path = self.path_images + f'/{self.__get_name()}'
         try:
             # Создание папки
@@ -103,12 +105,27 @@ class ParsingAd:
             for image in list_images:
                 number += 1
                 response, content = h.request(image)
-                out = open(ready_path + f'/{number}.jpg', 'wb')
+                image_path = ready_path + f'/{number}.png'
+                out = open(image_path, 'wb')
                 out.write(content)
                 out.close()
-
+                self.__changing_image(image_path)
+                if image_path is not None:
+                    list_images_path.append(os.path.abspath(image_path))
+            return list_images_path
         except OSError:
             print('Создать директорию %s не удалось' % ready_path)
+        return None
+
+    # Изменение размера изображения
+    def __changing_image(self, image):
+        original_image = Image.open(image)
+        width, height = original_image.size
+        size = (1600, 700)
+        if width == height:
+            size = (700, 700)
+        resized_image = original_image.resize(size)
+        resized_image.save(image)
 
     # Получение описания
     def __get_description(self):
@@ -136,11 +153,12 @@ class ParsingAd:
                     photo = photo.find('source', {'itemprop': 'image'})
                     list_result.append(photo.get('srcset'))
         if len(list_result) != 0 and list_result is not None:
-            dict_result['main-photo'] = list_result[0]
-            if len(list_result) > 1:
-                dict_result['additional-photos'] = self.__translate_list_to_string(list_result[1:])
-            dict_result['photo-articles'] = self.__translate_list_to_string(self.__get_article_photo(list_result))
-            self.__save_images(list_result)
+            list_images_path = self.__save_images(list_result)
+            if list_images_path is not None:
+                dict_result['main-photo'] = self.__translate_list_to_string(list_images_path[0:2])
+                if len(list_images_path) > 2:
+                    dict_result['additional-photos'] = self.__translate_list_to_string(list_images_path[2:])
+                dict_result['photo-articles'] = self.__translate_list_to_string(self.__get_article_photo(list_result))
         else:
             print('Фото не найдены')
         return dict_result

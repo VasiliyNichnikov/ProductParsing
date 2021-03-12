@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from time import sleep
 import requests
 from requests import HTTPError
-from Errors import ErrorInformationPageNotFound
+from errors import ErrorInformationPageNotFound
 from selenium.common.exceptions import NoSuchElementException, WebDriverException, TimeoutException
 
 options = webdriver.ChromeOptions()
