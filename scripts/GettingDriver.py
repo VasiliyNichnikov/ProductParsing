@@ -29,7 +29,7 @@ def get_information_webdriver(url, delay_after_error):
 
         except WebDriverException as e:
             print('Ошибка - %s' % e)
-            sleep(5 * 60)
+            sleep(delay_after_error)
     raise ErrorInformationPageNotFound('Информация не найдена')
 
 
@@ -37,12 +37,15 @@ def get_information_requests(url, delay_after_error):
     for i in range(10):
         try:
             response = requests.get(url)
-
             # если ответ успешен, исключения задействованы не будут
             response.raise_for_status()
             return BeautifulSoup(response.text, 'lxml')
+
         except HTTPError as http_err:
             print(f'HTTP error occurred: {http_err}')  # Python 3.6
+            sleep(delay_after_error)
+
         except Exception as err:
             print(f'Other error occurred: {err}')  # Python 3.6
+            sleep(delay_after_error)
     raise ErrorInformationPageNotFound('Информация не найдена')

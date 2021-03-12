@@ -6,7 +6,7 @@ from LeroyMerlin.ParsingAd import ParsingAd
 from database.LeroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
 from database import db_session
 from Errors import ErrorInformationPageNotFound
-from threading import Thread
+
 import os
 import pandas as pd
 from time import sleep
@@ -160,8 +160,8 @@ class Program(QtWidgets.QMainWindow):
     # Запуск программы
     def __start_parser(self):
         self.__on_off_buttons(False)
-        thread = Thread(target=self.__parser)
-        thread.start()
+        # thread = Thread(target=self.__parser)
+        # thread.start()
         print('Парсер запущен')
 
     # Добавление ссылок
