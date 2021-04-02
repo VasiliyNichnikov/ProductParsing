@@ -1,0 +1,7 @@
+# Переменные, являются ключами в словаре
+NAME_SITE = 'NAME_SITE'
+DELAY_ERROR = 'DELAY_ERROR'
+DELAY_AD = 'DELAY_AD'
+CAPTCHA = 'CAPTCHA'
+NAME_EXCEL_TABLE = 'NAME_EXCEL_TABLE'
+LINKS = 'LINKS'

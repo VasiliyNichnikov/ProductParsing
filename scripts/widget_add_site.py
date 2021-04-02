@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets, QtGui
+from basic_parameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
 from add_site_interface import Ui_MainWindow
 
 
@@ -29,13 +30,14 @@ class ButtonAddItem(QtWidgets.QWidget):
 
 
 class AddSiteProgram(QtWidgets.QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super(AddSiteProgram, self).__init__(parent)
         self.UI = Ui_MainWindow()
         self.parent = parent
         self.UI.setupUi(self)
         self.UI.LineEditNameExcelFile.setPlaceholderText('Введите название файла excel')
         self.setWindowTitle('Добавление сайта')
+        self.__id = 0
         # Список всех ссылок
         self.list_widgets_item_urls = []
         self.save_block = False
@@ -44,6 +46,15 @@ class AddSiteProgram(QtWidgets.QMainWindow):
         # Нажатие на кнопку "Сохранить"
         self.UI.BushButtonSave.clicked.connect(self.get_info_values)
         item.button_add.clicked.connect(self.add_new_url)
+
+    @property
+    def id(self):
+        return self.__id
+
+    @id.setter
+    def id(self, value):
+        if value >= 0:
+            self.__id = value
 
     # Добавление элемента в список
     def add_item(self, class_item):
@@ -54,20 +65,21 @@ class AddSiteProgram(QtWidgets.QMainWindow):
         return class_item, list_widget_item
 
     # Добавление нового элемента в список ссылок
-    def add_new_url(self):
+    def add_new_url(self) -> None:
         item, list_widget_item = self.add_item(WidgetUrlItem(self))
         self.list_widgets_item_urls.append(list_widget_item)
         item.button_remove.clicked.connect(self.remove_url)
 
+    # TODO: Нужно понять, что делает данная функция и переменовать ее
     # Добавление новой ссылки в список, а также обозначение url
-    def add_new_url_and_take_url(self, url):
+    def add_new_url_and_take_url(self, url) -> None:
         item, list_widget_item = self.add_item(WidgetUrlItem(self))
         self.list_widgets_item_urls.append(list_widget_item)
         item.button_remove.clicked.connect(self.remove_url)
         item.select_url(url)
 
     # Удаление элемента из списка ссылок
-    def remove_url(self):
+    def remove_url(self) -> None:
         for item in self.list_widgets_item_urls:
             widget = self.UI.ListWidgetListLinks.itemWidget(item)
             if widget.button_remove == self.sender():
@@ -76,14 +88,15 @@ class AddSiteProgram(QtWidgets.QMainWindow):
                 self.UI.ListWidgetListLinks.takeItem(index_remove_item)
                 break
 
-    # Передача параметров в функцию основной программы
+    # Получить значение всех блоков
     def get_info_values(self) -> None:
-        dict_values = {'ComboBoxSite': self.UI.ComboBoxSite.currentText(),
-                       'SpinBoxDelayError': self.UI.SpinBoxDelayError.value(),
-                       'SpinBoxCaptcha': self.UI.SpinBoxCaptcha.value(),
-                       'ComboBoxBypassingCaptchas': self.UI.ComboBoxBypassingCaptchas.currentText(),
-                       'LineEditNameExcelFile': self.UI.LineEditNameExcelFile.text(),
-                       'ListWidgetListLinks': [self.UI.ListWidgetListLinks.itemWidget(item).line_url.text() for item in
+        dict_values = {'ID': self.__id,
+                       NAME_SITE: self.UI.ComboBoxSite.currentText(),
+                       DELAY_ERROR: self.UI.SpinBoxDelayError.value(),
+                       DELAY_AD: self.UI.SpinBoxCaptcha.value(),
+                       CAPTCHA: self.UI.ComboBoxBypassingCaptchas.currentText(),
+                       NAME_EXCEL_TABLE: self.UI.LineEditNameExcelFile.text(),
+                       LINKS: [self.UI.ListWidgetListLinks.itemWidget(item).line_url.text() for item in
                                                self.list_widgets_item_urls
                                                if self.UI.ListWidgetListLinks.itemWidget(item).line_url.text() != '']}
 
@@ -95,14 +108,14 @@ class AddSiteProgram(QtWidgets.QMainWindow):
         self.close()
 
     # Загрузка данных в блок
-    def load_values(self, dict_values):
+    def load_values(self, dict_values) -> None:
         self.save_block = True
-        self.UI.ComboBoxSite.setCurrentText(dict_values['ComboBoxSite'])
-        self.UI.SpinBoxDelayError.setValue(dict_values['SpinBoxDelayError'])
-        self.UI.SpinBoxCaptcha.setValue(dict_values['SpinBoxCaptcha'])
-        self.UI.ComboBoxBypassingCaptchas.setCurrentText(dict_values['ComboBoxBypassingCaptchas'])
-        self.UI.LineEditNameExcelFile.setText(dict_values['LineEditNameExcelFile'])
-        for url in dict_values['ListWidgetListLinks']:
+        self.UI.ComboBoxSite.setCurrentText(dict_values[NAME_SITE])
+        self.UI.SpinBoxDelayError.setValue(dict_values[DELAY_ERROR])
+        self.UI.SpinBoxCaptcha.setValue(dict_values[DELAY_AD])
+        self.UI.ComboBoxBypassingCaptchas.setCurrentText(dict_values[CAPTCHA])
+        self.UI.LineEditNameExcelFile.setText(dict_values[NAME_EXCEL_TABLE])
+        for url in dict_values[LINKS]:
             self.add_new_url_and_take_url(url)
 
     # Закрытие окна
