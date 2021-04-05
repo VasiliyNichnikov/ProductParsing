@@ -30,37 +30,36 @@ path_excel = '../files/excel spreadsheets/'
 
 
 class Program(QtWidgets.QMainWindow):
-    finished = QtCore.pyqtSignal()
+
+    delay_after_error = 0
+    delay_between_pages = 0
+    delay_between_ads = 0
+    working_with_captchas = 'None'
+    file_name = 'None'
+    list_links = []
+    window_opened = False
+    widgets_sites = []
 
     def __init__(self):
         super(Program, self).__init__()
         self.UI = Ui_MainWindow()
-        self.UI.setupUi(self)
-        self.setWindowTitle('Парсер сайтов')
-
-        self.delay_after_error = 0
-        self.delay_between_pages = 0
-        self.delay_between_ads = 0
-        self.working_with_captchas = 'None'
-        self.file_name = 'None'
-        self.list_links = []
         # Для работы с excel таблицей
         self.df = pd.DataFrame()
 
         # Инициализация БД
         db_session.global_init(path_db)
 
-        # Переменная отвечает, открыто окно добавления/редактирования ссылки или нет
-        self.window_opened = False
-        # Список сайтов для парсинга
-        self.widgets_sites = []
-        # Добавление стартовой кнопки, с помощью которой можно добавить сайты для парсинга
-        button_add_item = self.add_item_button(ButtonAddItem())
-        # Работа с кнопкой добавления элементов
-        button_add_item.button_add.clicked.connect(self.open_widget_add_site)
-
-        # Загрузка данных из БД
+        self.load_interface()
+        self.connect_buttons()
         self.load_data_db_interface()
+
+    def load_interface(self):
+        self.UI.setupUi(self)
+        self.setWindowTitle('Парсер сайтов')
+
+    def connect_buttons(self):
+        button_add_item = self.add_item_button(ButtonAddItem())
+        button_add_item.button_add.clicked.connect(self.open_widget_add_site)
 
     # Добавление элемента кнопки в список
     def add_item_button(self, class_item) -> ButtonAddItem:
@@ -82,7 +81,6 @@ class Program(QtWidgets.QMainWindow):
     def transfer_values(self, values, save_block=False) -> None:
         self.window_opened = False
         if save_block is False:
-            # Сохранение полученных данных в БД
             self.save_data_db(values)
             self.add_block_to_list(values)
         else:
@@ -125,19 +123,18 @@ class Program(QtWidgets.QMainWindow):
     def edit_widget_site(self):
         if not self.window_opened:
             site = None
-            # Поиск сайта из БД
+
             for item in self.widgets_sites:
                 widget = self.UI.ListWidget.itemWidget(item)
                 if widget.button_edit == self.sender():
                     session = db_session.create_session()
                     site = session.query(Site).filter(Site.NAME_EXCEL_TABLE == widget.name_excel_table).first()
-                    session.commit()
                     break
 
             if site is not None:
                 self.window_opened = True
-                widget_add_site = AddSiteProgram(self)
-                widget_add_site.load_values({
+                widget = AddSiteProgram(self)
+                widget.load_values({
                     NAME_SITE: site.NAME_SITE,
                     DELAY_ERROR: site.DELAY_ERROR,
                     DELAY_AD: site.DELAY_AD,
@@ -145,8 +142,8 @@ class Program(QtWidgets.QMainWindow):
                     NAME_EXCEL_TABLE: site.NAME_EXCEL_TABLE,
                     LINKS: [link.LINK for link in site.LINKS]
                 })
-                widget_add_site.id = site.ID
-                widget_add_site.show()
+                widget.id = site.ID
+                widget.show()
             else:
                 # FIXME: Ошибка, если сайт не найден
                 pass

@@ -6,10 +6,15 @@ from add_site_interface import Ui_MainWindow
 class WidgetUrlItem(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(WidgetUrlItem, self).__init__(parent)
+
         self.horizontal_box_layout = QtWidgets.QHBoxLayout()
         self.line_url = QtWidgets.QLineEdit()
-        self.line_url.setPlaceholderText('Введите url адрес')
         self.button_remove = QtWidgets.QPushButton('Удалить')
+
+        self.settings_fields()
+
+    def settings_fields(self):
+        self.line_url.setPlaceholderText('Введите url адрес')
         self.horizontal_box_layout.addWidget(self.line_url)
         self.horizontal_box_layout.addWidget(self.button_remove)
         self.setLayout(self.horizontal_box_layout)
@@ -25,8 +30,6 @@ class ButtonAddItem(QtWidgets.QWidget):
         self.button_add = QtWidgets.QPushButton("Добавить сайт")
         self.button_box_layout.addWidget(self.button_add)
         self.setLayout(self.button_box_layout)
-        # self.button_add.clicked.connect(self.open_widget_add_site)
-        # self.window_add_site_open = False
 
 
 class AddSiteProgram(QtWidgets.QMainWindow):
@@ -97,8 +100,8 @@ class AddSiteProgram(QtWidgets.QMainWindow):
                        CAPTCHA: self.UI.ComboBoxBypassingCaptchas.currentText(),
                        NAME_EXCEL_TABLE: self.UI.LineEditNameExcelFile.text(),
                        LINKS: [self.UI.ListWidgetListLinks.itemWidget(item).line_url.text() for item in
-                                               self.list_widgets_item_urls
-                                               if self.UI.ListWidgetListLinks.itemWidget(item).line_url.text() != '']}
+                               self.list_widgets_item_urls
+                               if self.UI.ListWidgetListLinks.itemWidget(item).line_url.text() != '']}
 
         if self.parent is not None:
             self.parent.transfer_values(dict_values, self.save_block)

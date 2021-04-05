@@ -15,7 +15,7 @@ class ParsingPageLenta:
 
     # Получение ссылок
     def get_urls(self):
-        soup = get_information_webdriver(url=self.url + f'&page={self.page}', delay_after_error=self.delay_after_error)
+        soup = get_information_requests(url=self.url + f'&page={self.page}', delay_after_error=self.delay_after_error)
         block_main = soup.find('div', {'class': 'skus-search-results__main'})
         block_products = block_main.find('div', {'class': 'catalog-grid-container__grid'})
 

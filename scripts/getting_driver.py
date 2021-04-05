@@ -36,7 +36,8 @@ def get_information_webdriver(url, delay_after_error):
 def get_information_requests(url, delay_after_error):
     for i in range(10):
         try:
-            response = requests.get(url)
+            session = requests.Session()
+            response = session.get(url)
             # если ответ успешен, исключения задействованы не будут
             response.raise_for_status()
             return BeautifulSoup(response.text, 'lxml')
