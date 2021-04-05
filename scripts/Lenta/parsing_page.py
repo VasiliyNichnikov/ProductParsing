@@ -11,6 +11,7 @@ class ParsingPageLenta:
         self.delay_after_error = delay_after_error
         self.page = start_page
         self.max_page = self.page + 1
+        self.lenta = 'https://lenta.com'
 
     # Получение ссылок
     def get_urls(self):
@@ -20,9 +21,10 @@ class ParsingPageLenta:
 
         if block_products is not None:
             products = block_products.find_all('div', {'class': 'sku-card-small-container'})
-            print(products)
-            # for product in products:
-            #     print(product.find('a', {'class': 'sku-card-small sku-card-small--ecom'}))
+            # print(products)
+            for product in products:
+                a = product.find('a', {'class': 'sku-card-small sku-card-small--ecom'})
+                print(self.lenta + a.get('href'))
 
         # soup = get_information_requests(url=self.url + f'&page={self.page}', delay_after_error=self.delay_after_error)
         # self.max_page = self.__get_max_page(soup=soup)
