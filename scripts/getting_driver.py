@@ -9,7 +9,7 @@ from selenium.common.exceptions import NoSuchElementException, WebDriverExceptio
 options = webdriver.ChromeOptions()
 # options.add_argument('--headless')
 options.add_argument("--log-level=3")
-path_webdriver = '../../files/chromium/chromedriver.exe'
+path_webdriver = '../../files/chromium/chromedriver'
 
 
 def get_information_webdriver(url, delay_after_error):
