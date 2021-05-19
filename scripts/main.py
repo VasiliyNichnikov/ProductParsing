@@ -1,9 +1,9 @@
 """
     Данный скрипт запускает парсинг с введенными параметрами
 """
-from LeroyMerlin.parsing_page import ParsingPage
+from leroyMerlin.parsing_page import ParsingPage
 from basic_parameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
-from LeroyMerlin.parsing_ad import ParsingAd
+from leroyMerlin.parsing_ad import ParsingAd
 from database.LeroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
 from database import db_session
 from errors import ErrorInformationPageNotFound
@@ -11,7 +11,7 @@ from widget_add_site import AddSiteProgram
 from database.Program.site import Site
 from database.Program.links import Link
 import os
-import pandas as pd
+# import pandas as pd
 from time import sleep
 import json
 from PyQt5 import QtWidgets, QtCore
@@ -30,7 +30,6 @@ path_excel = '../files/excel spreadsheets/'
 
 
 class Program(QtWidgets.QMainWindow):
-
     delay_after_error = 0
     delay_between_pages = 0
     delay_between_ads = 0
