@@ -4,12 +4,12 @@
 from leroyMerlin.parsing_page import ParsingPage
 from basic_parameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
 from leroyMerlin.parsing_ad import ParsingAd
-from database.LeroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
+from database.leroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
 from database import db_session
 from errors import ErrorInformationPageNotFound
 from widget_add_site import AddSiteProgram
-from database.Program.site import Site
-from database.Program.links import Link
+from database.program.site import Site
+from database.program.links import Link
 import os
 # import pandas as pd
 from time import sleep
