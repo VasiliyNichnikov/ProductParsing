@@ -4,7 +4,7 @@
 import os
 import httplib2
 from PIL import Image
-from scripts.getting_driver import get_information_requests
+from scripts.GettingDriver import get_information_requests
 
 
 class ParsingAd:

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy import orm
-from ..db_session import SqlAlchemyBase
+from ..DbSession import SqlAlchemyBase
 
 
 class Link(SqlAlchemyBase):

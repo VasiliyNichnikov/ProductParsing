@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from scripts.errors import TagInformationNotFound
+from scripts.Errors import TagInformationNotFound
 
 
 def check_result(result, name_tag):

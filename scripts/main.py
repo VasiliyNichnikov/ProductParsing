@@ -1,24 +1,24 @@
 """
     Данный скрипт запускает парсинг с введенными параметрами
 """
-from leroyMerlin.parsing_page import ParsingPage
-from basic_parameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
-from leroyMerlin.parsing_ad import ParsingAd
-from database.leroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
-from database import db_session
-from errors import ErrorInformationPageNotFound
-from widget_add_site import AddSiteProgram
-from database.program.site import Site
-from database.program.links import Link
+from leroyMerlin.ParsingPage import ParsingPage
+from BasicParameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
+from leroyMerlin.ParsingAd import ParsingAd
+from database.leroyMerlin.AdLeroyMerlin import AdModelLeroyMerlin
+from database import DbSession
+from Errors import ErrorInformationPageNotFound
+from WidgetAddSite import AddSiteProgram
+from database.program.Site import Site
+from database.program.Links import Link
 import os
 # import pandas as pd
 from time import sleep
 import json
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox, QListWidgetItem
-from item_site import WidgetItem, ButtonAddItem
+from ItemSite import WidgetItem, ButtonAddItem
 # from interface import Ui_MainWindow, Ui_AddUrl
-from new_interface import Ui_MainWindow
+from NewInterface import Ui_MainWindow
 import sys
 
 # Путь до настроек
@@ -46,7 +46,7 @@ class Program(QtWidgets.QMainWindow):
         self.df = pd.DataFrame()
 
         # Инициализация БД
-        db_session.global_init(path_db)
+        DbSession.global_init(path_db)
 
         self.load_interface()
         self.connect_buttons()
@@ -103,7 +103,7 @@ class Program(QtWidgets.QMainWindow):
             widget = self.UI.ListWidget.itemWidget(item)
             if widget.button_remove == self.sender():
                 index_remove_item = self.UI.ListWidget.row(item)
-                session = db_session.create_session()
+                session = DbSession.create_session()
                 site = session.query(Site).filter(Site.NAME_EXCEL_TABLE == widget.name_excel_table).first()
                 session.delete(site)
                 session.commit()
@@ -126,7 +126,7 @@ class Program(QtWidgets.QMainWindow):
             for item in self.widgets_sites:
                 widget = self.UI.ListWidget.itemWidget(item)
                 if widget.button_edit == self.sender():
-                    session = db_session.create_session()
+                    session = DbSession.create_session()
                     site = session.query(Site).filter(Site.NAME_EXCEL_TABLE == widget.name_excel_table).first()
                     break
 
@@ -148,7 +148,7 @@ class Program(QtWidgets.QMainWindow):
                 pass
 
     def edit_data_db(self, values):
-        session = db_session.create_session()
+        session = DbSession.create_session()
         site = session.query(Site).filter(Site.ID == values['ID']).first()
         if site is not None:
             site.NAME_SITE = values[NAME_SITE]
@@ -168,7 +168,7 @@ class Program(QtWidgets.QMainWindow):
     # Сохранение информации в БД
     @staticmethod
     def save_data_db(values) -> None:
-        session = db_session.create_session()
+        session = DbSession.create_session()
         site = Site(
             NAME_SITE=values[NAME_SITE],
             DELAY_ERROR=int(values[DELAY_ERROR]),
@@ -184,7 +184,7 @@ class Program(QtWidgets.QMainWindow):
 
     # Загрузка информации из БД в интерфейс
     def load_data_db_interface(self):
-        session = db_session.create_session()
+        session = DbSession.create_session()
         sites = session.query(Site).all()
         for site in sites:
             dict_values = {
@@ -205,7 +205,7 @@ class Program(QtWidgets.QMainWindow):
                 info = data_ad.get_info()
                 print(f'Получение информации из ссылки - {info}')
 
-                session = db_session.create_session()
+                session = DbSession.create_session()
                 ad = AdModelLeroyMerlin(
                     NAME=f"{info['NAME']}",
                     PRICE=f"{info['PRICE']}",
@@ -238,7 +238,7 @@ class Program(QtWidgets.QMainWindow):
 
     # Перевод из .db в excel
     def __translation_to_excel_table(self):
-        session = db_session.create_session()
+        session = DbSession.create_session()
 
         self.df['№'] = [i[0] for i in session.query(AdModelLeroyMerlin.ENTRY_ID).all()]
         self.df['Артикул'] = [' ' for i in session.query(AdModelLeroyMerlin.ENTRY_ID).all()]

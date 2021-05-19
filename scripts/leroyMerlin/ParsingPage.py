@@ -1,7 +1,7 @@
 """
     Данный скрипт парсит объявление Leroy Merlin и получает ссылки.
 """
-from scripts.getting_driver import get_information_requests
+from scripts.GettingDriver import get_information_requests
 
 
 class ParsingPage:

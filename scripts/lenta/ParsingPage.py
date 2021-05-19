@@ -7,8 +7,8 @@ from typing import List
 from bs4 import BeautifulSoup
 
 from scripts.handler.HandlerSoup import HandlerSoup
-from scripts.errors import TagInformationNotFound
-from scripts.getting_driver import get_information_requests, get_information_webdriver
+from scripts.Errors import TagInformationNotFound
+from scripts.GettingDriver import get_information_requests, get_information_webdriver
 
 
 class ParsingPageLenta:
