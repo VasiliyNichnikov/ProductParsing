@@ -1,10 +1,10 @@
 """
     Данный скрипт парсит объявление Leroy Merlin и получает ссылки.
 """
-from scripts.GettingDriver import get_information_requests
+from scripts.requests_server import get_information_requests
 
 
-class ParsingPage:
+class ParsePage:
     def __init__(self, url, start_page, delay_after_error=0):
         self.url = url
         self.delay_after_error = delay_after_error

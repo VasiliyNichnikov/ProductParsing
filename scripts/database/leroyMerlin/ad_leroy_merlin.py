@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from ..DbSession import SqlAlchemyBase
+from ..db_session import SqlAlchemyBase
 
 
 class AdModelLeroyMerlin(SqlAlchemyBase):

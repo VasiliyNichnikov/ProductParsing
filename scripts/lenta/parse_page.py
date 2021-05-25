@@ -6,12 +6,12 @@ import math
 from typing import List
 from bs4 import BeautifulSoup
 
-from scripts.handler.HandlerSoup import HandlerSoup
-from scripts.Errors import TagInformationNotFound
-from scripts.GettingDriver import get_information_webdriver
+from scripts.handler.handler_soup import HandlerSoup
+from scripts.errors import TagInformationNotFound
+from scripts.requests_server import get_information_webdriver
 
 
-class ParsingPageLenta:
+class ParsePage:
     def __init__(self, url, number_start_page, delay_after_error=0):
         self.__url = url
         self.__delay_after_error = delay_after_error
@@ -70,5 +70,5 @@ class ParsingPageLenta:
 url = "https://lenta.com/search/?searchText=гречка"
 
 if __name__ == '__main__':
-    parsing_page_lenta = ParsingPageLenta(url, 1)
+    parsing_page_lenta = ParsePage(url, 1)
     parsing_page_lenta.get_urls()

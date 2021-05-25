@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from scripts.Errors import TagInformationNotFound
+from scripts.errors import TagInformationNotFound
 
 
 def check_result(result, name_tag):
@@ -10,15 +10,12 @@ def check_result(result, name_tag):
 
 
 class HandlerSoup:
-    def __init__(self, soup) -> None:
-        self.soup = soup
-
-    def find(self, name=None, attrs={}, recursive=True, text=None,
+    def find(self, soup: BeautifulSoup, name=None, attrs={}, recursive=True, text=None,
              **kwargs) -> BeautifulSoup:
-        result = self.soup.find(name, attrs, recursive, text, **kwargs)
+        result = soup.find(name, attrs, recursive, text, **kwargs)
         return check_result(result, name)
 
-    def find_all(self, name=None, attrs={}, recursive=True, text=None,
+    def find_all(self, soup: BeautifulSoup, name=None, attrs={}, recursive=True, text=None,
                  limit=None, **kwargs) -> BeautifulSoup:
-        result = self.soup.find_all(name, attrs, recursive, text, limit, **kwargs)
+        result = soup.find_all(name, attrs, recursive, text, limit, **kwargs)
         return check_result(result, name)

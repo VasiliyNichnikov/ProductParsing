@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from time import sleep
 import requests
 from requests import HTTPError
-from .Errors import ErrorInformationPageNotFound
+from .errors import ErrorInformationPageNotFound
 from selenium.common.exceptions import NoSuchElementException, WebDriverException, TimeoutException
 
 options = webdriver.ChromeOptions()
@@ -38,8 +38,10 @@ def get_information_requests(url, delay_after_error):
         try:
             session = requests.Session()
             response = session.get(url)
-            # если ответ успешен, исключения задействованы не будут
-            response.raise_for_status()
+
+            # with open("test_html.html", "w", encoding="utf-8") as file_write:
+            #     file_write.write(response.text)
+            print("BS4 - ", BeautifulSoup(response.text, 'lxml'))
             return BeautifulSoup(response.text, 'lxml')
 
         except HTTPError as http_err:

@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtGui
-from BasicParameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
-from AddSiteInterface import Ui_MainWindow
+from basic_parameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
+from add_site_interface import Ui_MainWindow
 
 
 class WidgetUrlItem(QtWidgets.QWidget):

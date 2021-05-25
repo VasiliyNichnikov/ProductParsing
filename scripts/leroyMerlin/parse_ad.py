@@ -4,10 +4,10 @@
 import os
 import httplib2
 from PIL import Image
-from scripts.GettingDriver import get_information_requests
+from scripts.requests_server import get_information_requests
 
 
-class ParsingAd:
+class ParseAd:
     def __init__(self, url, path_images, delay_after_error=0):
         self.url = url
         self.path_images = path_images
