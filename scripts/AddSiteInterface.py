@@ -152,7 +152,7 @@ class Ui_MainWindow(object):
         self.LabelNameSite.setText(_translate("MainWindow", "Выбор сайта"))
         self.ComboBoxSite.setItemText(0, _translate("MainWindow", "None"))
         self.ComboBoxSite.setItemText(1, _translate("MainWindow", "Leroy Merlin"))
-        self.ComboBoxSite.setItemText(2, _translate("MainWindow", "Lenta"))
+        self.ComboBoxSite.setItemText(2, _translate("MainWindow", "lenta"))
         self.BushButtonSave.setText(_translate("MainWindow", "Сохранить"))
         self.LabelNameExcelFile.setText(_translate("MainWindow", "Название итогового excel файла"))
         self.LabelCaptcha.setText(_translate("MainWindow", "Задержка между объявлениями"))

@@ -3,13 +3,13 @@ from bs4 import BeautifulSoup
 from time import sleep
 import requests
 from requests import HTTPError
-from .errors import ErrorInformationPageNotFound
+from .Errors import ErrorInformationPageNotFound
 from selenium.common.exceptions import NoSuchElementException, WebDriverException, TimeoutException
 
 options = webdriver.ChromeOptions()
 # options.add_argument('--headless')
 options.add_argument("--log-level=3")
-path_webdriver = '../../files/chromium/chromedriver'
+path_webdriver = '../../files/chromium/chromedriver.exe'
 
 
 def get_information_webdriver(url, delay_after_error):

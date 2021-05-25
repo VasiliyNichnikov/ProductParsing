@@ -1,24 +1,24 @@
 """
     Данный скрипт запускает парсинг с введенными параметрами
 """
-from LeroyMerlin.parsing_page import ParsingPage
-from basic_parameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
-from LeroyMerlin.parsing_ad import ParsingAd
-from database.LeroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
+from leroyMerlin.ParsingPage import ParsingPage
+from BasicParameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
+from leroyMerlin.ParsingAd import ParsingAd
+from database.leroyMerlin.AdLeroyMerlin import AdModelLeroyMerlin
 from database import db_session
-from errors import ErrorInformationPageNotFound
-from widget_add_site import AddSiteProgram
-from database.Program.site import Site
-from database.Program.links import Link
+from Errors import ErrorInformationPageNotFound
+from WidgetAddSite import AddSiteProgram
+from database.program.Site import Site
+from database.program.Links import Link
 import os
 import pandas as pd
 from time import sleep
 import json
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox, QListWidgetItem
-from item_site import WidgetItem, ButtonAddItem
+from ItemSite import WidgetItem, ButtonAddItem
 # from interface import Ui_MainWindow, Ui_AddUrl
-from new_interface import Ui_MainWindow
+from NewInterface import Ui_MainWindow
 import sys
 
 # Путь до настроек
@@ -322,5 +322,4 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication([])
     application = Program()
     application.show()
-
     sys.exit(app.exec())
