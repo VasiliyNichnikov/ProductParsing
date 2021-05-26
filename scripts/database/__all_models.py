@@ -1,2 +1,2 @@
 from .leroyMerlin import AdLeroyMerlin
-from .program import Links, Site
+from .program import links, site

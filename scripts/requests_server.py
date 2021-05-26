@@ -44,10 +44,6 @@ def get_information_requests(url, delay_after_error):
             else:
                 response.raise_for_status()
             session.close()
-            # with open("test_html.html", "w", encoding="utf-8") as file_write:
-            #     file_write.write(response.text)
-            # print("BS4 - ", BeautifulSoup(response.text, 'lxml'))
-
 
         except HTTPError as http_err:
             print(f'HTTP error occurred: {http_err}')  # Python 3.6

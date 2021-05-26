@@ -8,8 +8,8 @@ from database.leroyMerlin.AdLeroyMerlin import AdModelLeroyMerlin
 from database import db_session
 from Errors import ErrorInformationPageNotFound
 from WidgetAddSite import AddSiteProgram
-from database.program.Site import Site
-from database.program.Links import Link
+from database.program.site import Site
+from database.program.links import Link
 import os
 import pandas as pd
 from time import sleep
