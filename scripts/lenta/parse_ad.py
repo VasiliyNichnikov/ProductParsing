@@ -5,9 +5,9 @@ import os
 # import httplib2
 # from PIL import Image
 from typing import List, Dict
-from bs4 import BeautifulSoup
-from scripts.errors import TagInformationNotFound
-from scripts.handler.handler_soup import HandlerSoup
+from bs4 import BeautifulSoup, PageElement, ResultSet
+from scripts.errors import TagInformationNotFound, TextTagNotFound
+from scripts.handler.handler_soup import HandlerSoup, HandlerSoup2
 from scripts.requests_server import get_information_requests, get_information_webdriver
 
 
@@ -16,38 +16,42 @@ class ParseAd:
         self.url = url
         self.path_images = path_images
         self.soup = get_information_webdriver(url, delay_after_error=delay_after_error)
-        self.handler_soup = HandlerSoup()
+        self.handler_soup = HandlerSoup2(self.soup)
 
-        print(f"Имя - {self.__get_name()}")
-        print(f"Артикул - {self.__get_article_number()}")
-        print(f"Цены - {self.__get_default_lenta_card_prices()}")
-        self.__get_specifications()
-        # print(f"Характеристики - {}")
+        # print(f"Имя - {self.__get_name()}")
+        # print(f"Артикул - {self.__get_article_number()}")
+        # print(f"Цены - {self.__get_default_lenta_card_prices()}")
 
     # Артикул
     def __get_article_number(self) -> int:
+        self.handler_soup.soup = self.soup
         article_number = 0
-        try:
-            block_info = self.handler_soup.find(self.soup, "div", {"class": ["sku-page__info"]})
-            article = self.handler_soup.find(block_info, "div", {"class": ["sku-page__code-info"]})
-            # Сделать проверку на исключения текста
-            article_text = article.text
-            article_number_text = article_text.split()[-1]
-            if article_number_text.isdigit():
-                article_number = int(article_number_text)
-        except TagInformationNotFound as e:
-            print(f"Error - {e}")
+
+        page_info = self.handler_soup.find("div", {"class": ["sku-page__info"]})
+        self.handler_soup.soup = page_info
+        page_code = self.handler_soup.find("div", {"class": ["sku-page__code-info"]})
+        self.handler_soup.soup = page_code
+
+        article_text = self.handler_soup.text
+        # article_text = page_code.
+
+        article_split = article_text.split()
+        if len(article_split) != 0 and article_split[-1].isdigit():
+            article_number = int(article_split[-1])
+
         return article_number
 
     # Название товара
     def __get_name(self) -> str:
-        name_text = ""
-        try:
-            block_header = self.handler_soup.find(self.soup, "div", {"class": ["sku-page__header"]})
-            name = self.handler_soup.find(block_header, "h1", {"class": "sku-page__title"})
-            name_text = self.__removing_spaces(name.text)
-        except TagInformationNotFound as e:
-            print(f"Error - {e}")
+        self.handler_soup.soup = self.soup
+
+        page_header = self.handler_soup.find("div", {"class": ["sku-page__header"]})
+        self.handler_soup.soup = page_header
+
+        page_title = self.handler_soup.find("h1", {"class": "sku-page__title"})
+        self.handler_soup.soup = page_title
+
+        name_text = self.__removing_spaces(self.handler_soup.text)
         return name_text
 
     def __removing_spaces(self, name_text: str):
@@ -56,35 +60,35 @@ class ParseAd:
 
     # Цены в рублях (со скидкой и без)
     def __get_default_lenta_card_prices(self):
-        result = {"default": "0.0", "lenta_card": "0.0"}
-        try:
-            block_main_info = self.handler_soup.find(self.soup, "div",
-                                                     {"class": ["sku-page-control-container", "sku-page__control"]})
-            block_prices = self.handler_soup.find(block_main_info, "div", {"class": ["sku-prices-block",
-                                                                                     "sku-page-control__prices"]})
-            default_block_price = self.handler_soup.find(block_prices, "div", {"class": ["sku-price--regular"]})
-            lenta_card_block_price = self.handler_soup.find(block_prices, "div", {"class": ["sku-price--primary"]})
+        self.handler_soup.soup = self.soup
+        page_control_container = self.handler_soup.find("div",
+                                                        {"class": ["sku-page-control-container", "sku-page__control"]})
+        self.handler_soup.soup = page_control_container
+        prices_block = self.handler_soup.find("div", {"class": ["sku-prices-block",
+                                                                "sku-page-control__prices"]})
 
-            default_price = self.__get_price(default_block_price)
-            lenta_card_price = self.__get_price(lenta_card_block_price)
-            result = {"default": f"{default_price['integer']}.{default_price['fraction']}",
-                      "lenta_card": f"{lenta_card_price['integer']}.{lenta_card_price['fraction']}"}
+        self.handler_soup.soup = prices_block
+        default_block_price = self.handler_soup.find("div", {"class": ["sku-price--regular"]})
+        lenta_card_block_price = self.handler_soup.find("div", {"class": ["sku-price--primary"]})
 
-        except TagInformationNotFound as e:
-            print(f"Error - {e}")
+        default_price = self.__get_price(default_block_price)
+        lenta_card_price = self.__get_price(lenta_card_block_price)
 
+        result = {"default": f"{default_price['integer']}.{default_price['fraction']}",
+                  "lenta_card": f"{lenta_card_price['integer']}.{lenta_card_price['fraction']}"}
         return result
 
-    def __get_price(self, block_price: BeautifulSoup) -> dict:
-        integer_number_text = ""
-        fraction_number_text = ""
-        try:
-            integer_number = self.handler_soup.find(block_price, "span", {"class": ["sku-price__integer"]})
-            fraction_number = self.handler_soup.find(block_price, "small", {"class": ["sku-price__fraction"]})
-            integer_number_text = integer_number.text
-            fraction_number_text = fraction_number.text
-        except TagInformationNotFound as e:
-            print(f"Error - {e}")
+    def __get_price(self, block_price: [BeautifulSoup, PageElement, ResultSet]) -> dict:
+        self.handler_soup.soup = block_price
+
+        integer_number = self.handler_soup.find("span", {"class": ["sku-price__integer"]})
+        fraction_number = self.handler_soup.find("small", {"class": ["sku-price__fraction"]})
+
+        self.handler_soup.soup = integer_number
+        integer_number_text = self.handler_soup.text
+
+        self.handler_soup.soup = fraction_number
+        fraction_number_text = self.handler_soup.text
         return {"integer": integer_number_text, "fraction": fraction_number_text}
 
     def __get_specifications(self):
@@ -131,4 +135,4 @@ class ParseAd:
 
 
 if __name__ == "__main__":
-    parsingAd = ParseAd("https://lenta.com/product/grechka-mistral-fermerskaya-rossiya-900g-479051/", "", 0)
+    parsing_ad = ParseAd("https://lenta.com/product/grechka-mistral-fermerskaya-rossiya-900g-479051/", "", 0)
