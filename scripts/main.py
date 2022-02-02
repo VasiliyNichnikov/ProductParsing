@@ -1,32 +1,31 @@
 """
     Данный скрипт запускает парсинг с введенными параметрами
 """
-from leroyMerlin.parse_page import ParsePage
-from basic_parameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
-from leroyMerlin.parse_ad import ParseAd
-from database.leroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
-from database import db_session
-from errors import ErrorInformationPageNotFound
-from widget_add_site import AddSiteProgram
-from database.program.site import Site
-from database.program.links import Link
 import os
-# import pandas as pd
-from time import sleep
-import json
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QMessageBox, QListWidgetItem
-from item_site import WidgetItem, ButtonAddItem
-# from interface import Ui_MainWindow, Ui_AddUrl
-from new_interface import Ui_MainWindow
 import sys
+from time import sleep
+
+import pandas as pd
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QMessageBox, QListWidgetItem
+
+from basic_parameters import NAME_SITE, DELAY_ERROR, DELAY_AD, CAPTCHA, NAME_EXCEL_TABLE, LINKS
+from database import db_session
+from database.leroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
+from database.program.links import Link
+from database.program.site import Site
+from errors import ErrorInformationPageNotFound
+from item_site import WidgetItem, ButtonAddItem
+from leroyMerlin.parse_ad import ParseAd
+from new_interface import Ui_MainWindow
+from widget_add_site import AddSiteProgram
 
 # Путь до настроек
 path_settings = '../files/settings.json'
 # Путь до БД
 path_db = '../files/database/program.db'
 # Путь до Excel таблицы
-path_excel = '../files/excel spreadsheets/'
+path_excel = '../files/excel/'
 
 
 class Program(QtWidgets.QMainWindow):
@@ -59,6 +58,8 @@ class Program(QtWidgets.QMainWindow):
     def connect_buttons(self):
         button_add_item = self.add_item_button(ButtonAddItem())
         button_add_item.button_add.clicked.connect(self.open_widget_add_site)
+        # self.UI.PushButton.clicked.connect(self.__parsing_ad)
+
 
     # Добавление элемента кнопки в список
     def add_item_button(self, class_item) -> ButtonAddItem:
