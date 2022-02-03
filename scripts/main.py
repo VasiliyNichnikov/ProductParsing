@@ -1,20 +1,22 @@
 """
     Данный скрипт запускает парсинг с введенными параметрами
 """
-from LeroyMerlin.ParsingPage import ParsingPage
-from LeroyMerlin.ParsingAd import ParsingAd
-from database.LeroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
-from database import db_session
-from Errors import ErrorInformationPageNotFound
-from threading import Thread
-import os
-import pandas as pd
-from time import sleep
 import json
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5 import QtWidgets, QtCore
-from interface import Ui_MainWindow, Ui_AddUrl
+import os
 import sys
+from threading import Thread
+from time import sleep
+
+import pandas as pd
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QMessageBox
+
+from Errors import ErrorInformationPageNotFound
+from LeroyMerlin.ParsingAd import ParsingAd
+from LeroyMerlin.ParsingPage import ParsingPage
+from database import db_session
+from database.LeroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
+from interface import Ui_MainWindow, Ui_AddUrl
 
 path_settings = '../files/settings.json'
 path_db = '../files/database/'
@@ -48,7 +50,7 @@ class Program(QtWidgets.QMainWindow):
         self.UI.listWidget_list_links.itemSelectionChanged.connect(self.__select_url_in_list)
 
         # Получаем данные из json файла
-        with open(path_settings, encoding='utf-8') as read_file:
+        with open(path_settings, 'r', encoding='utf-8') as read_file:
             print('Получение данных из файла')
             data = json.load(read_file)
             # Задержка после ошибки
@@ -160,9 +162,9 @@ class Program(QtWidgets.QMainWindow):
     # Запуск программы
     def __start_parser(self):
         self.__on_off_buttons(False)
+        print('Парсер запущен')
         thread = Thread(target=self.__parser)
         thread.start()
-        print('Парсер запущен')
 
     # Добавление ссылок
     def __add_url(self):
@@ -174,9 +176,10 @@ class Program(QtWidgets.QMainWindow):
 
     # Парсер
     def __parser(self):
+        print(f"Ссылки - {self.list_links}")
         for url in self.list_links:
             parsing_page = ParsingPage(url=url, start_page=1, delay_after_error=self.delay_after_error)
-            while parsing_page.page <= parsing_page.max_page:
+            while parsing_page.page <= 2:
                 print(f'Страница - {parsing_page.page}; Максимальная страница - {parsing_page.max_page}')
                 list_links = parsing_page.get_urls()
                 print(f'Список ссылок - {list_links}; Длина списка - {len(list_links)}')
