@@ -179,12 +179,13 @@ class Program(QtWidgets.QMainWindow):
         print(f"Ссылки - {self.list_links}")
         for url in self.list_links:
             parsing_page = ParsingPage(url=url, start_page=1, delay_after_error=self.delay_after_error)
-            while parsing_page.page <= 2:
+            while parsing_page.page <= parsing_page.max_page:
                 print(f'Страница - {parsing_page.page}; Максимальная страница - {parsing_page.max_page}')
                 list_links = parsing_page.get_urls()
                 print(f'Список ссылок - {list_links}; Длина списка - {len(list_links)}')
                 if list_links is not None:
                     for link in list_links:
+                        print(f"Выбранная ссылка парсера - {link}")
                         self.__parsing_ad(link)
                 parsing_page.page += 1
                 sleep(self.delay_between_pages)
