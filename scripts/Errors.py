@@ -4,3 +4,7 @@ class Error(Exception):
 
 class ErrorInformationPageNotFound(Error):
     pass
+
+
+class ErrorNoLinksToAdsFound(Error):
+    pass

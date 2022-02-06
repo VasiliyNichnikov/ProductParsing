@@ -6,12 +6,13 @@ import os
 import sys
 from threading import Thread
 from time import sleep
+from typing import List
 
 import pandas as pd
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox
 
-from Errors import ErrorInformationPageNotFound
+from Errors import ErrorInformationPageNotFound, ErrorNoLinksToAdsFound
 from LeroyMerlin.ParsingAd import ParsingAd
 from LeroyMerlin.ParsingPage import ParsingPage
 from database import db_session
@@ -77,6 +78,11 @@ class Program(QtWidgets.QMainWindow):
                 self.UI.listWidget_list_links.addItem(item)
         # Инициализация БД
         db_session.global_init(path_db + f'{self.file_name}.db')
+
+    # Удаление db при выходе из приложения
+    def closeEvent(self, event):
+        if os.path.exists(path_db + f'{self.file_name}.db'):
+            os.remove(path_db + f'{self.file_name}.db')
 
     # Проверка нажатия кнопок на клавиатуре
     def keyPressEvent(self, event):
@@ -178,28 +184,41 @@ class Program(QtWidgets.QMainWindow):
     def __parser(self):
         print(f"Ссылки - {self.list_links}")
         for url in self.list_links:
-            parsing_page = ParsingPage(url=url, start_page=1, delay_after_error=self.delay_after_error)
-            while parsing_page.page <= parsing_page.max_page:
-                print(f'Страница - {parsing_page.page}; Максимальная страница - {parsing_page.max_page}')
-                list_links = parsing_page.get_urls()
-                print(f'Список ссылок - {list_links}; Длина списка - {len(list_links)}')
-                if list_links is not None:
-                    for link in list_links:
-                        print(f"Выбранная ссылка парсера - {link}")
-                        self.__parsing_ad(link)
-                parsing_page.page += 1
-                sleep(self.delay_between_pages)
+            self.__parser_pages(url, start_page=1)
         self.__translation_to_excel_table()
         self.__on_off_buttons(True)
 
-    # Проверка изменений
-    def __check_changes(self):
-        pass
+    def __parser_pages(self, url: str, start_page: int = 1) -> None:
+        page = ParsingPage(url=url, start_page=start_page, delay_after_error=self.delay_after_error)
 
-    # Удаление db при выходе из приложения
-    def closeEvent(self, event):
-        if os.path.exists(path_db + f'{self.file_name}.db'):
-            os.remove(path_db + f'{self.file_name}.db')
+        while page.number_now <= page.max:
+            print(f"Номер страницы: {page.number_now}; Максимальная страница: {page.max}")
+            links: List[str] = self.__get_links(page)
+            self.__parser_links(links)
+            page.number_now += 1
+            sleep(self.delay_between_pages)
+
+    def __get_links(self, page: ParsingPage) -> List[str]:
+        while True:
+            try:
+                links: List[str] = page.get_urls()
+                if links is None:
+                    raise ErrorNoLinksToAdsFound(f"the object {links} is None")
+                break
+            except Exception as e:
+                print(f"Error - {e}")
+                sleep(self.delay_after_error)
+        return links
+
+    def __parser_links(self, links: List[str]) -> None:
+        for link in links:
+            for i in range(10):
+                try:
+                    self.__parsing_ad(link)
+                    break
+                except Exception as e:
+                    print(f"Error - {e}")
+                    sleep(self.delay_after_error)
 
     # Перевод из .db в excel
     def __translation_to_excel_table(self):

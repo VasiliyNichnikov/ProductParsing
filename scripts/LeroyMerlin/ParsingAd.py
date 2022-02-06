@@ -31,8 +31,16 @@ class ParsingAd:
         if block_price is not None:
             price = block_price.find('span', {'slot': 'price'})
             if price is not None:
-                dict_result['price'] = price.text
+                dict_result['price'] = self.__remove_extra_characters(price.text)
         return dict_result['price']
+
+    @staticmethod
+    def __remove_extra_characters(price: str) -> str:
+        ready_price: str = ""
+        for character in price:
+            if character in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '.']:
+                ready_price += character
+        return ready_price
 
     # Возвращает кол-во товара
     def __get_quantity_goods(self):
@@ -113,7 +121,7 @@ class ParsingAd:
 
     @staticmethod
     def __name_correction_directory(name_directory) -> str:
-        for item in [":", "*", "?", '"', "<", ">", "|"]:
+        for item in [":", "*", "?", '"', "<", ">", "|", "\\", "/"]:
             if item in name_directory:
                 name_directory = name_directory.replace(item, '')
         return name_directory
