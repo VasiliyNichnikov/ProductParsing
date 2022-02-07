@@ -12,12 +12,12 @@ import pandas as pd
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox
 
-from Errors import ErrorInformationPageNotFound, ErrorNoLinksToAdsFound
-from LeroyMerlin.ParsingAd import ParsingAd
-from LeroyMerlin.ParsingPage import ParsingPage
-from database import db_session
-from database.LeroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
-from interface import Ui_MainWindow, Ui_AddUrl
+from scripts.Errors import ErrorInformationPageNotFound, ErrorNoLinksToAdsFound
+from scripts.LeroyMerlin.ParsingAd import ParsingAd
+from scripts.LeroyMerlin.ParsingPage import ParsingPage
+from scripts.database import db_session
+from scripts.database.LeroyMerlin.ad_leroy_merlin import AdModelLeroyMerlin
+from scripts.interface import Ui_MainWindow, Ui_AddUrl
 
 path_settings = '../files/settings.json'
 path_db = '../files/database/'
@@ -100,6 +100,7 @@ class Program(QtWidgets.QMainWindow):
                 session = db_session.create_session()
                 ad = AdModelLeroyMerlin(
                     NAME=f"{info['NAME']}",
+                    ARTICLE=f"{info['ARTICLE']}",
                     PRICE=f"{info['PRICE']}",
                     WEIGHT=f"{info['WEIGHT']}",
                     WIDTH=f"{info['WIDTH']}",
@@ -194,6 +195,7 @@ class Program(QtWidgets.QMainWindow):
         while page.number_now <= page.max:
             print(f"Номер страницы: {page.number_now}; Максимальная страница: {page.max}")
             links: List[str] = self.__get_links(page)
+            print(f"Длина списка товаров: {len(links)}; Список товаров: {links};")
             self.__parser_links(links)
             page.number_now += 1
             sleep(self.delay_between_pages)
@@ -225,7 +227,7 @@ class Program(QtWidgets.QMainWindow):
         session = db_session.create_session()
 
         self.df['№'] = [i[0] for i in session.query(AdModelLeroyMerlin.ENTRY_ID).all()]
-        self.df['Артикул'] = [' ' for i in session.query(AdModelLeroyMerlin.ENTRY_ID).all()]
+        self.df['Артикул'] = [i[0] for i in session.query(AdModelLeroyMerlin.ARTICLE).all()]
         self.df['Название товара'] = [i[0] for i in session.query(AdModelLeroyMerlin.NAME).all()]
         self.df['Цена, руб.*'] = [i[0] for i in session.query(AdModelLeroyMerlin.PRICE).all()]
         self.df['Вес в упаковке, г*'] = [i[0] for i in session.query(AdModelLeroyMerlin.WEIGHT).all()]

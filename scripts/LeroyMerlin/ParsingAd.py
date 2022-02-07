@@ -24,6 +24,17 @@ class ParsingAd:
             dict_result['name'] = name.text
         return dict_result['name']
 
+    # Возвращает артикуль товара
+    def __get_article(self) -> str:
+        dict_result = {"article": "0"}
+        block_article = self.soup.find("div", {"class": ["_3ZkVWJ-", "_1sXUurJD9J_pdp", "arn2hrf_pdp"]})
+        if block_article is not None:
+            article = block_article.find("span", {"class": "t12nw7s2_pdp"})
+            if article is not None:
+                article = article.text.replace("Арт. ", "")
+                dict_result["article"] = article
+        return dict_result["article"]
+
     # Возвращает цену товара
     def __get_price(self):
         dict_result = {'price': '0'}
@@ -169,6 +180,7 @@ class ParsingAd:
     # Получение всей собранной инфомармации
     def get_info(self):
         name = self.__get_name()
+        article = self.__get_article()
         price = self.__get_price()
 
         specifications = self.__get_specifications()
@@ -192,6 +204,7 @@ class ParsingAd:
 
         return {
             'NAME': name,
+            "ARTICLE": article,
             'PRICE': price,
             'WEIGHT': weight,
             'WIDTH': width,

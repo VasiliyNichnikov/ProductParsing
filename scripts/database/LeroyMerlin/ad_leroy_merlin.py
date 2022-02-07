@@ -7,6 +7,7 @@ class AdModelLeroyMerlin(SqlAlchemyBase):
 
     ENTRY_ID = Column(Integer, primary_key=True, autoincrement=True)
     NAME = Column(String, nullable=True)
+    ARTICLE = Column(String, nullable=True)
     PRICE = Column(String, nullable=True)
     WEIGHT = Column(String, nullable=True)
     WIDTH = Column(String, nullable=True)
